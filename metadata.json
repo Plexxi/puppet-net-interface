@@ -1,0 +1,14 @@
+{
+  "name": "plexxi-net-interface",
+  "version": "1.0.0",
+  "author": "plexxi",
+  "summary": "Manage network interface settings in /etc/network/interfaces style config file.",
+  "license": "Apache 2.0",
+  "source": "https://github.com/Plexxi/puppet-net-interface",
+  "project_page": "https://github.com/Plexxi/puppet-net-interface",
+  "issues_url": "https://github.com/Plexxi/puppet-net-interface/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
