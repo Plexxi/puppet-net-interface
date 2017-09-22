@@ -1,0 +1,122 @@
+#
+# DO NOT EDIT
+# This file is managed by Puppet module plexxi-net-interface.
+#
+
+<% if @disable4 == false or @disable6 == false -%>
+auto <%= @ifname %>
+<% end -%>
+
+<% if @disable4 == true -%>
+iface <%= @ifname -%> inet manual
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @dhcp4 -%>
+iface <%= @ifname -%> inet dhcp
+<% if @dhcp4['hostname'] -%>
+    hostname <%= @dhcp4['hostname'] %>
+<% end -%>
+<% if @dhcp4['leasetime'] -%>
+    leasetime <%= @dhcp4['leasetime'] %>
+<% end -%>
+<% if @dhcp4['vendor'] -%>
+    vendor "<%= @dhcp4['vendor'] -%>"
+<% end -%>
+<% if @dhcp4['client'] -%>
+    client "<%= @dhcp4['client'] -%>"
+<% end -%>
+<% if @metric4 -%>
+    metric <%= @metric4 %>
+<% end -%>
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @static4 -%>
+iface <%= @ifname -%> inet static
+    address <%= Array(@static4['addrs']).shift %>
+<% if @static4['gateway'] -%>
+    gateway <%= @static4['gateway'] %>
+<% end -%>
+<% if @static4['mtu'] -%>
+    mtu <%= @static4['mtu'] %>
+<% end -%>
+<% if @metric4 -%>
+    metric <%= @metric4 %>
+<% end -%>
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @routes4 -%>
+<% @routes4.keys.sort.each do |k| -%>
+    up ip -f inet route add <%= k -%> via <%= @routes4[k] %>
+<% end -%>
+<% @routes4.keys.sort.each do |k| -%>
+    down ip -f inet route del <%= k %>
+<% end -%>
+<% end -%>
+<% if @static4 -%>
+<% Array(@static4['addrs']).each do |addr| -%>
+
+iface <%= @ifname -%> inet static
+    address <%= addr %>
+<% end -%>
+<% end -%>
+
+<% if @disable6 == true -%>
+iface <%= @ifname -%> inet6 manual
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @dhcp6 -%>
+iface <%= @ifname -%> inet6 dhcp
+    pre-up sleep 10
+<% if @dhcp6['hostname'] -%>
+    hostname <%= @dhcp6['hostname'] %>
+<% end -%>
+<% if @dhcp6['leasetime'] -%>
+    leasetime <%= @dhcp6['leasetime'] %>
+<% end -%>
+<% if @dhcp6['vendor'] -%>
+    vendor "<%= @dhcp6['vendor'] -%>"
+<% end -%>
+<% if @dhcp6['client'] -%>
+    client "<%= @dhcp6['client'] -%>"
+<% end -%>
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @static6 -%>
+iface <%= @ifname -%> inet6 static
+    address <%= Array(@static6['addrs']).shift %>
+<% if @static6['gateway'] -%>
+    gateway <%= @static6['gateway'] %>
+<% end -%>
+<% if @static6['mtu'] -%>
+    mtu <%= @static6['mtu'] %>
+<% end -%>
+<% if @cfg_hwaddress -%>
+    hwaddress <%= @cfg_hwaddress %>
+<% end -%>
+<% end -%>
+<% if @routes6 -%>
+<% @routes6.keys.sort.each do |k| -%>
+    up ip -f inet6 route add <%= k -%> via <%= @routes6[k] %>
+<% end -%>
+<% @routes6.keys.sort.each do |k| -%>
+    down ip -f inet6 route del <%= k %>
+<% end -%>
+<% end -%>
+<% if @static6 -%>
+<% Array(@static6['addrs']).each do |addr| -%>
+
+iface <%= @ifname -%> inet6 static
+    address <%= addr %>
+<% end -%>
+<% end -%>
+

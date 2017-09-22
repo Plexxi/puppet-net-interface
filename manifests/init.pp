@@ -151,7 +151,7 @@ class net-interface (
     if has_key($dhcp4, leasetime) {
       $leasetime4 = $dhcp4[leasetime]
       if !is_integer($leasetime4) {
-        fail('dhcp4 leasetime - expected integer number of minutes')
+        fail('dhcp4 leasetime - expected integer number of seconds')
       }
     }
     if has_key($dhcp4, vendor) {
@@ -180,9 +180,6 @@ class net-interface (
       $gateway4 = $static4[gateway]
       validate_ipv4_address($gateway4)
     }
-    else {
-      fail('static4 - must specify a gateway')
-    }
     if has_key($static4, mtu) {
       $mtu4 = $static4[mtu]
       if !is_integer($mtu4) {
@@ -204,7 +201,7 @@ class net-interface (
     if has_key($dhcp6, leasetime) {
       $leasetime6 = $dhcp6[leasetime]
       if !is_integer($leasetime6) {
-        fail('dhcp6 leasetime - expected integer number of minutes')
+        fail('dhcp6 leasetime - expected integer number of seconds')
       }
     }
     if has_key($dhcp6, vendor) {
@@ -233,9 +230,6 @@ class net-interface (
       $gateway6 = $static6[gateway]
       validate_ipv6_address($gateway6)
     }
-    else {
-      fail('static6 - must specify a gateway')
-    }
     if has_key($static6, mtu) {
       $mtu6 = $static6[mtu]
       if !is_integer($mtu6) {
@@ -260,17 +254,17 @@ class net-interface (
     my_validate_ipv6_address { $nhops6: }
   }
 
-  #notice("ifname - $ifname")
-  #notice("cfg_hwaddress - $cfg_hwaddress")
-  #notice("disable4 - $disable4")
-  #notice("metric4 - $metric4")
-  #notice("dhcp4 - $dhcp4")
-  #notice("static4 - $static4")
-  #notice("disable6 - $disable6")
-  #notice("dhcp6 - $dhcp6")
-  #notice("static6 - $static6")
-  #notice("routes4 - $routes4")
-  #notice("routes6 - $routes6")
+  notice("ifname - $ifname")
+  notice("cfg_hwaddress - $cfg_hwaddress")
+  notice("disable4 - $disable4")
+  notice("metric4 - $metric4")
+  notice("dhcp4 - $dhcp4")
+  notice("static4 - $static4")
+  notice("disable6 - $disable6")
+  notice("dhcp6 - $dhcp6")
+  notice("static6 - $static6")
+  notice("routes4 - $routes4")
+  notice("routes6 - $routes6")
 
 
 # Actions
@@ -284,16 +278,16 @@ class net-interface (
     owner   => 0,
     group   => 0,
     mode    => '0644',
-    content => template('plexxi-net-interface/interfaces.erb'),
+    content => template('net-interface/interfaces.erb'),
   }
 
   exec { "${ifname}-configure":
     unless => "/usr/bin/cmp -s ${tmp_target} ${target}",
-    command => "/sbin/ifdown ${ifname}; /bin/cp -a ${tmp_target} ${target}",
-    require => $tmp_target,
+    command => "/sbin/ifdown ${ifname}; /sbin/ip -f inet addr flush dev ${ifname}; /sbin/ip -f inet6 addr flush dev ${ifname}; /bin/cp -a ${tmp_target} ${target}",
+    require => File[$tmp_target],
   } -> exec { "${ifname}-up":
     unless => "/usr/bin/test ${disable4} = true -a ${disable6} = true",
     command => "/sbin/ifup ${ifname}",
-    require => $target,
+#    require => $target,
   }
 }
