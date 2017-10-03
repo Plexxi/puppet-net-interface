@@ -242,7 +242,7 @@ class net-interface (
     validate_hash($routes4)
     $nets = keys($routes4)
     my_validate_ipv4_prefix { $nets: }
-    $nhops = values($routes4)
+    $nhops = unique(values($routes4))
     my_validate_ipv4_address { $nhops: }
   }
 
@@ -250,7 +250,7 @@ class net-interface (
     validate_hash($routes6)
     $nets6 = keys($routes6)
     my_validate_ipv6_prefix { $nets6: }
-    $nhops6 = values($routes6)
+    $nhops6 = unique(values($routes6))
     my_validate_ipv6_address { $nhops6: }
   }
 

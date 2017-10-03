@@ -74,7 +74,6 @@ iface <%= @ifname -%> inet6 manual
 <% end -%>
 <% if @dhcp6 -%>
 iface <%= @ifname -%> inet6 dhcp
-    pre-up sleep 10
 <% if @dhcp6['hostname'] -%>
     hostname <%= @dhcp6['hostname'] %>
 <% end -%>
