@@ -24,13 +24,15 @@
 # === Examples
 #
 # IPv4 disabled; IPv6 use DHCP no options
-#  class { 'net-interface': 'mgmt',
+#  class { 'net-interface':
+#    ifname => 'mgmt',
 #    disable4 => true,
 #    dhcp6 => {},
 #  }
 #
 # IPv4 use DHCP w/ options; IPv6 static params w/ extra static routes
-#  class { 'net-interface': 'mgmt',
+#  class { 'net-interface':
+#    ifname => 'mgmt',
 #    dhcp4 => { hostname => 'me.here',
 #               leasetime => 3600,
 #             },
@@ -43,7 +45,8 @@
 #  }
 #
 # IPv4 static params; IPv6 disabled
-#  class { 'net-interface': 'mgmt',
+#  class { 'net-interface':
+#    ifname => 'mgmt',
 #    static4 => { addrs => [ '1.2.3.4/16', ],
 #                 gateway => '1.2.3.254',
 #                 mtu => 1500,
@@ -65,7 +68,6 @@ class net-interface (
 
   # IPv4
   $disable4 = false,
-  $metric4 = undef,
   $dhcp4 = undef,
   $static4 = undef,
 
@@ -136,14 +138,16 @@ class net-interface (
 
   validate_bool($disable4)
 
-  if $metric4 and !is_integer($metric4) {
-    fail('metric4 - expected integer value')
-  }
-
   if $dhcp4 {
     if $static4 { fail('cannot specify both dhcp4 and static4') }
     if $disable4 and $disable4 == true { fail('cannot specify both dhcp4 and disable4') }
     validate_hash($dhcp4)
+    if has_key($dhcp4, metric) {
+      $metric4 = $dhcp4[metric]
+      if !is_integer($metric4) {
+        fail('dhcp4 metric - expected integer value')
+      }
+    }
     if has_key($dhcp4, hostname) {
       $hostname4 = $dhcp4[hostname]
       validate_re($hostname4, '^(?![0-9]+$)(?!-)[a-zA-Z0-9-]{,63}(?<!-)$', 'dhcp4 hostname is invalid')
@@ -179,6 +183,12 @@ class net-interface (
     if has_key($static4, gateway) {
       $gateway4 = $static4[gateway]
       validate_ipv4_address($gateway4)
+    }
+    if has_key($static4, metric) {
+      $metric4 = $static4[metric]
+      if !is_integer($metric4) {
+        fail('static4 metric - expected integer value')
+      }
     }
     if has_key($static4, mtu) {
       $mtu4 = $static4[mtu]
@@ -257,7 +267,6 @@ class net-interface (
   notice("ifname - $ifname")
   notice("cfg_hwaddress - $cfg_hwaddress")
   notice("disable4 - $disable4")
-  notice("metric4 - $metric4")
   notice("dhcp4 - $dhcp4")
   notice("static4 - $static4")
   notice("disable6 - $disable6")
