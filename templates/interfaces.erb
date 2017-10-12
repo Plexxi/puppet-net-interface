@@ -27,8 +27,8 @@ iface <%= @ifname -%> inet dhcp
 <% if @dhcp4['client'] -%>
     client "<%= @dhcp4['client'] -%>"
 <% end -%>
-<% if @metric4 -%>
-    metric <%= @metric4 %>
+<% if @dhcp4['metric'] -%>
+    metric <%= @dhcp4['metric'] %>
 <% end -%>
 <% if @cfg_hwaddress -%>
     hwaddress <%= @cfg_hwaddress %>
@@ -43,8 +43,8 @@ iface <%= @ifname -%> inet static
 <% if @static4['mtu'] -%>
     mtu <%= @static4['mtu'] %>
 <% end -%>
-<% if @metric4 -%>
-    metric <%= @metric4 %>
+<% if @static4['metric'] -%>
+    metric <%= @static4['metric'] %>
 <% end -%>
 <% if @cfg_hwaddress -%>
     hwaddress <%= @cfg_hwaddress %>
@@ -72,19 +72,35 @@ iface <%= @ifname -%> inet6 manual
     hwaddress <%= @cfg_hwaddress %>
 <% end -%>
 <% end -%>
+<% if @auto6 -%>
+iface <%= @ifname -%> inet6 auto
+<% if @auto6_privext == 'off' -%>
+    privext 0
+<% elsif @auto6_privext == 'assign' -%>
+    privext 1
+<% elsif @auto6_privext == 'prefer' -%>
+    privext 2
+<% end -%>
+<% if @auto6_accept_ra == 'off' -%>
+    accept_ra 0
+<% elsif @auto6_accept_ra == 'on' -%>
+    accept_ra 1
+<% elsif @auto6_accept_ra == 'on+forwarding' -%>
+    accept_ra 2
+<% end -%>
+<% if @auto6_dhcp == true -%>
+    dhcp 1
+    down dhclient -x -pf /var/run/dhclient6.<%= @ifname -%>.pid
+<% end -%>
+<% end -%>
 <% if @dhcp6 -%>
 iface <%= @ifname -%> inet6 dhcp
-<% if @dhcp6['hostname'] -%>
-    hostname <%= @dhcp6['hostname'] %>
-<% end -%>
-<% if @dhcp6['leasetime'] -%>
-    leasetime <%= @dhcp6['leasetime'] %>
-<% end -%>
-<% if @dhcp6['vendor'] -%>
-    vendor "<%= @dhcp6['vendor'] -%>"
-<% end -%>
-<% if @dhcp6['client'] -%>
-    client "<%= @dhcp6['client'] -%>"
+<% if @dhcp6_accept_ra == 'off' -%>
+    accept_ra 0
+<% elsif @dhcp6_accept_ra == 'on' -%>
+    accept_ra 1
+<% elsif @dhcp6_accept_ra == 'on+forwarding' -%>
+    accept_ra 2
 <% end -%>
 <% if @cfg_hwaddress -%>
     hwaddress <%= @cfg_hwaddress %>
@@ -98,6 +114,20 @@ iface <%= @ifname -%> inet6 static
 <% end -%>
 <% if @static6['mtu'] -%>
     mtu <%= @static6['mtu'] %>
+<% end -%>
+<% if @static6_privext == 'off' -%>
+    privext 0
+<% elsif @static6_privext == 'assign' -%>
+    privext 1
+<% elsif @static6_privext == 'prefer' -%>
+    privext 2
+<% end -%>
+<% if @static6_accept_ra == 'off' -%>
+    accept_ra 0
+<% elsif @static6_accept_ra == 'on' -%>
+    accept_ra 1
+<% elsif @static6_accept_ra == 'on+forwarding' -%>
+    accept_ra 2
 <% end -%>
 <% if @cfg_hwaddress -%>
     hwaddress <%= @cfg_hwaddress %>

@@ -8,6 +8,7 @@
     * [Static IPv4](#static-ipv4)
     * [DHCP IPv4](#dhcp-ipv4)
     * [Disabled IPv4](#disabled-ipv4)
+    * [Auto IPv6](#auto-ipv6)
     * [Static IPv6](#static-ipv6)
     * [DHCP IPv6](#dhcp-ipv6)
     * [Disabled IPv6](#disabled-ipv6)
@@ -55,13 +56,12 @@ For static IPv4 configuration, specify at least one address/mask to assign. You 
 The ```routes4``` parameter can be used to specify a list of static routes and
 their next-hops to be added when the interface is brought up.
 
-Examples:
 ```puppet
 class { 'net-interface':
   ifname   => 'eth0',
-  static4  => { addrs => [ '1.2.3.4/24', ],
+  static4  => { addrs   => [ '1.2.3.4/24', ],
                 gateway => '1.2.3.254',
-                mtu => 1500,
+                mtu     => 1500,
               },
   disable6 => true,
 }
@@ -74,7 +74,7 @@ class { 'net-interface':
                              '5.6.7.8/16', ],
                 gateway => '172.17.214.1',
               },
-  routes4  => { '10.11.12.0/24' => '172.17.214.6',
+  routes4  => { '10.11.12.0/24'  => '172.17.214.6',
                 '134.141.0.0/16' => '172.17.99.99', },
   disable6 => true,
 }
@@ -84,7 +84,6 @@ class { 'net-interface':
 
 When specifying DHCP for IPv4, options include metric, preferred hostname, lease time, and vendor and client strings.
 
-Examples:
 ```puppet
 class { 'net-interface':
   ifname   => 'eth0',
@@ -96,7 +95,7 @@ class { 'net-interface':
 ```puppet
 class { 'net-interface':
   ifname   => 'eth0',
-  dhcp4    => { hostname => 'hal9000',
+  dhcp4    => { hostname  => 'hal9000',
                 leasetime => 3600, },
   disable6 => true,
 }
@@ -115,20 +114,41 @@ class { 'net-interface':
 }
 ```
 
-### Static IPv6
+### Auto IPv6
 
-For static IPv6 configuration, specify at least one address/mask to assign. You can optionally specify default gateway or MTU.
+This is SLAAC (stateless address auto configuration). There are options to enable privacy extensions, adjust acceptance of router advertisements, and use stateless DHCP to acquire other config attributes besides the address assignment.
 
-The ```routes6``` parameter can be used to specify a list of static routes and
-their next-hops to be added when the interface is brought up.
-
-Examples:
 ```puppet
 class { 'net-interface':
   ifname  => 'eth0',
   dhcp4   => {},
-  static6 => { addrs => [ '2002:c000:203::1/64',
-               gateway => '2002:c000:203::ff', },
+  auto6   => {},   # Use auto IPv6 with no added options
+}
+```
+
+```puppet
+class { 'net-interface':
+  ifname  => 'eth0',
+  dhcp4   => {},
+  auto6   => { privext   => 'prefer',
+               accept_ra => 'on', },
+}
+```
+
+### Static IPv6
+
+For static IPv6 configuration, specify at least one address/mask to assign. You can optionally specify default gateway or MTU. Also there are options for privacy extensions and controlling how routing advertisements are accepted.
+
+The ```routes6``` parameter can be used to specify a list of static routes and
+their next-hops to be added when the interface is brought up.
+
+```puppet
+class { 'net-interface':
+  ifname  => 'eth0',
+  dhcp4   => {},
+  static6 => { addrs   => [ '2002:c000:203::1/64',
+               gateway => '2002:c000:203::ff',
+               privext => 'prefer' },
 }
 ```
 
@@ -141,7 +161,7 @@ class { 'net-interface':
                 gateway   => '2605:2700:0:3::1',
                 mtu       => 2048,
               },
-  routes6  => { '6:7:8::9/32' => '2605:2700:0:3::1',
+  routes6  => { '6:7:8::9/32'     => '2605:2700:0:3::1',
                 'a:b:c::d:e:f/93' => '2605:2700:0:3::1', },
   disable4 => true,
 }
@@ -149,12 +169,11 @@ class { 'net-interface':
 
 ### DHCP IPv6
 
-This is Stateful DHCPv6.  When specifying, options include preferred hostname, lease time, and vendor and client strings.
+This is Stateful DHCPv6. There's an added option to control how routing advertisements are accepted.
 
-Examples:
 ```puppet
 class { 'net-interface':
-  ifname   => 'mgmt',
+  ifname   => 'eth0',
   disable4 => true,
   dhcp6    => {},  # Use DHCPv6 - no extra options
 }
@@ -163,8 +182,7 @@ class { 'net-interface':
 ```puppet
 class { 'net-interface':
   ifname => 'eth0',
-  dhcp6  => { hostname  => 'foo-bar',
-              leasetime => 7200, },
+  dhcp6  => { accept_ra => 'off', },
 }
 ```
 
@@ -202,16 +220,19 @@ Note that several of the high-level parameters are hashes with certain keys supp
     * ```metric``` - (int) metric for added routes
     * ```mtu``` - (int) max transmissable unit size
 * ```routes4``` - (hash list) a list of "route_prefix => next_hop" ('A.B.C.0/24' => 'W.X.Y.Z') pairs defining additional IPv4 static routes to be set
+* ```auto6``` - (hash) use SLAAC to set the address; valid option keys for "key => value" pairs:
+    * ```privext``` - (enum) use RFC4941 privacy extensions; accepted values: 'off', 'assign', 'prefer' (default: 'off')
+    * ```accept_ra``` - (enum) accept router advertisements; accepted values: 'off', 'on', 'on+forwarding' (default: 'on+forwarding')
+    * ```dhcp``` - (bool) use stateless DHCPv6 (default: false)
 * ```dhcp6``` - (hash) use DHCP method for IPv6 address family; valid option keys for "key => value" pairs:
-    * ```client``` - (string) client identifier
-    * ```hostname``` - (string) requested hostname
-    * ```leasetime``` - (int) preferred lease time in seconds
-    * ```vendor``` - (string) vendor class identifier
+    * ```accept_ra``` - (enum) accept router advertisements; accepted values: 'off', 'on', 'on+forwarding' (default: 'on')
 * ```disable6``` - (bool) disable IPv6 address family (default: false) - as a boolean, be sure to pass ```true``` not the string ```'true'```
 * ```static6``` - (hash) use static address assignment for IPv6 address family; valid option keys for "key => value" pairs:
     * ```addrs``` - (string list) address/maskbits ('AA:BB::0099/M') strings to assign to interface (mandatory at least one)
     * ```gateway``` - (string) default gateway ('AA:BB::0C:0D')
     * ```mtu``` - (int) max transmissable unit size
+    * ```privext``` - (enum) use RFC4941 privacy extensions; accepted values: 'off', 'assign', 'prefer' (default: 'off')
+    * ```accept_ra``` - (enum) accept router advertisements; accepted values: 'off', 'on', 'on+forwarding' (default: 'on+forwarding')
 * ```routes6``` - (hash list) a list of "route_prefix => next_hop" ('AA:BB::9:0/64' => '11::22:03:56') pairs defining additional IPv6 static routes to be set
 
 ## Limitations

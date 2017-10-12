@@ -75,6 +75,7 @@ class net-interface (
   $disable6 = false,
   $dhcp6 = undef,
   $static6 = undef,
+  $auto6 = undef,
 
   # Static routes
   $routes4 = undef,
@@ -200,33 +201,30 @@ class net-interface (
 
   validate_bool($disable6)
 
+  $accept_ra_values = [ '^off$',
+                        '^on$',
+                        '^on\+forwarding$',
+                      ]
+  $privext_values   = [ '^off$',
+                        '^assign$',
+                        '^prefer$',
+                      ]
+
   if $dhcp6 {
     if $static6 { fail('cannot specify both dhcp6 and static6') }
     if $disable6 and $disable6 == true { fail('cannot specify both dhcp6 and disable6') }
+    if $auto6 { fail('cannot specify both dhcp6 and auto6') }
     validate_hash($dhcp6)
-    if has_key($dhcp6, hostname) {
-      $hostname6 = $dhcp6[hostname]
-      validate_re($hostname6, '^(?![0-9]+$)(?!-)[a-zA-Z0-9-]{,63}(?<!-)$', 'dhcp6 hostname is invalid')
-    }
-    if has_key($dhcp6, leasetime) {
-      $leasetime6 = $dhcp6[leasetime]
-      if !is_integer($leasetime6) {
-        fail('dhcp6 leasetime - expected integer number of seconds')
-      }
-    }
-    if has_key($dhcp6, vendor) {
-      $vendor6 = $dhcp6[vendor]
-      validate_string($vendor6)
-    }
-    if has_key($dhcp6, client) {
-      $client6 = $dhcp6[client]
-      validate_string($client6)
+    if has_key($dhcp6, accept_ra) {
+      $dhcp6_accept_ra = downcase($dhcp6[accept_ra])
+      validate_re($dhcp6_accept_ra, $accept_ra_values)
     }
   }
 
   if $static6 {
     if $dhcp6 { fail('cannot specify both dhcp6 and static6') }
     if $disable6 and $disable6 == true { fail('cannot specify both static6 and disable6') }
+    if $auto6 { fail('cannot specify both static6 and auto6') }
     validate_hash($static6)
     if has_key($static6, addrs) {
       $addrs6 = $static6[addrs]
@@ -245,6 +243,33 @@ class net-interface (
       if !is_integer($mtu6) {
         fail('static6 mtu - expected integer value')
       }
+    }
+    if has_key($static6, privext) {
+      $static6_privext = downcase($static6[privext])
+      validate_re($static6_privext, $privext_values)
+    }
+    if has_key($static6, accept_ra) {
+      $static6_accept_ra = downcase($static6[accept_ra])
+      validate_re($static6_accept_ra, $accept_ra_values)
+    }
+  }
+
+  if $auto6 {
+    if $dhcp6 { fail('cannot specify both dhcp6 and auto6') }
+    if $disable6 and $disable6 == true { fail('cannot specify both auto6 and disable6') }
+    if $static6 { fail('cannot specify both auto6 and static6') }
+    validate_hash($auto6)
+    if has_key($auto6, privext) {
+      $auto6_privext = downcase($auto6[privext])
+      validate_re($auto6_privext, $privext_values)
+    }
+    if has_key($auto6, accept_ra) {
+      $auto6_accept_ra = downcase($auto6[accept_ra])
+      validate_re($auto6_accept_ra, $accept_ra_values)
+    }
+    if has_key($auto6, dhcp) {
+      $auto6_dhcp = $auto6[dhcp]
+      validate_bool($auto6_dhcp)
     }
   }
 
@@ -271,6 +296,7 @@ class net-interface (
   notice("static4 - $static4")
   notice("disable6 - $disable6")
   notice("dhcp6 - $dhcp6")
+  notice("auto6 - $auto6")
   notice("static6 - $static6")
   notice("routes4 - $routes4")
   notice("routes6 - $routes6")
