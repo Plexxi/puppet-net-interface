@@ -1,3 +1,9 @@
+puppet-module-plexxi-net-interface (1.0.1) unstable; urgency=low
+
+  * Fix oops; remove notices from init.pp
+
+ -- Joe Lorenz <joe.lorenz@plexxi.com>  Fri, 13 Oct 2017 10:33:02 -0400
+
 puppet-module-plexxi-net-interface (1.0.0) unstable; urgency=low
 
   * Initial Release.

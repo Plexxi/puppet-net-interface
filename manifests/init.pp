@@ -289,17 +289,17 @@ class net-interface (
     my_validate_ipv6_address { $nhops6: }
   }
 
-  notice("ifname - $ifname")
-  notice("cfg_hwaddress - $cfg_hwaddress")
-  notice("disable4 - $disable4")
-  notice("dhcp4 - $dhcp4")
-  notice("static4 - $static4")
-  notice("disable6 - $disable6")
-  notice("dhcp6 - $dhcp6")
-  notice("auto6 - $auto6")
-  notice("static6 - $static6")
-  notice("routes4 - $routes4")
-  notice("routes6 - $routes6")
+  #notice("ifname - $ifname")
+  #notice("cfg_hwaddress - $cfg_hwaddress")
+  #notice("disable4 - $disable4")
+  #notice("dhcp4 - $dhcp4")
+  #notice("static4 - $static4")
+  #notice("disable6 - $disable6")
+  #notice("dhcp6 - $dhcp6")
+  #notice("auto6 - $auto6")
+  #notice("static6 - $static6")
+  #notice("routes4 - $routes4")
+  #notice("routes6 - $routes6")
 
 
 # Actions
