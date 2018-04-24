@@ -1,4 +1,4 @@
-# net-interface
+# net_interface
 
 #### Table of Contents
 
@@ -26,7 +26,7 @@ support IPv6 settings.
 
 ## Module Description
 
-Any declaration of ```net-interface``` class will cause this puppet module to
+Any declaration of ```net_interface``` class will cause this puppet module to
 take control of the file ```/etc/network/interfaces.d/IFNAME``` where IFNAME is
 specified with the ```ifname``` parameter to the class. Thus, ```ifname``` is a
 REQUIRED parameter.
@@ -57,7 +57,7 @@ The ```routes4``` parameter can be used to specify a list of static routes and
 their next-hops to be added when the interface is brought up.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   static4  => { addrs   => [ '1.2.3.4/24', ],
                 gateway => '1.2.3.254',
@@ -68,7 +68,7 @@ class { 'net-interface':
 ```
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   static4  => { addrs   => [ '172.17.205.2/16',
                              '5.6.7.8/16', ],
@@ -85,7 +85,7 @@ class { 'net-interface':
 When specifying DHCP for IPv4, options include metric, preferred hostname, lease time, and vendor and client strings.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   dhcp4    => {},  # Use DHCPv4 - no extra options
   disable6 => true,
@@ -93,7 +93,7 @@ class { 'net-interface':
 ```
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   dhcp4    => { hostname  => 'hal9000',
                 leasetime => 3600, },
@@ -107,7 +107,7 @@ If IPv4 is set as "disabled", the v4 address family is left unconfigured.
 If both address families are set "disabled", the interface as a whole is left administratively down.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   disable4 => true,
   disable6 => true,
@@ -119,7 +119,7 @@ class { 'net-interface':
 This is SLAAC (stateless address auto configuration). There are options to enable privacy extensions, adjust acceptance of router advertisements, and use stateless DHCP to acquire other config attributes besides the address assignment.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname  => 'eth0',
   dhcp4   => {},
   auto6   => {},   # Use auto IPv6 with no added options
@@ -127,7 +127,7 @@ class { 'net-interface':
 ```
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname  => 'eth0',
   dhcp4   => {},
   auto6   => { privext   => 'prefer',
@@ -143,7 +143,7 @@ The ```routes6``` parameter can be used to specify a list of static routes and
 their next-hops to be added when the interface is brought up.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname  => 'eth0',
   dhcp4   => {},
   static6 => { addrs   => [ '2002:c000:203::1/64',
@@ -153,7 +153,7 @@ class { 'net-interface':
 ```
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   static6  => { addrs     => [ '2605:2700:0:3::4444:630e/64',
                                '2605:2700:1:f00d::1/64',
@@ -172,7 +172,7 @@ class { 'net-interface':
 This is Stateful DHCPv6. There's an added option to control how routing advertisements are accepted.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   disable4 => true,
   dhcp6    => {},  # Use DHCPv6 - no extra options
@@ -180,7 +180,7 @@ class { 'net-interface':
 ```
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname => 'eth0',
   dhcp6  => { accept_ra => 'off', },
 }
@@ -193,7 +193,7 @@ If IPv6 is set as "disabled", the v6 address family is left unconfigured. This d
 If both address families are set "disabled", the interface as a whole is left administratively down.
 
 ```puppet
-class { 'net-interface':
+class { 'net_interface':
   ifname   => 'eth0',
   disable4 => true,
   disable6 => true,
