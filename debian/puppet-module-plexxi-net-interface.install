@@ -1,4 +1,4 @@
-metadata.json usr/share/puppet/modules.available/plexxi-net-interface
-templates usr/share/puppet/modules.available/plexxi-net-interface
-manifests usr/share/puppet/modules.available/plexxi-net-interface
+metadata.json usr/share/puppet/modules.available/plexxi-net_interface
+templates usr/share/puppet/modules.available/plexxi-net_interface
+manifests usr/share/puppet/modules.available/plexxi-net_interface
 

@@ -20,8 +20,8 @@ set -e
 
 case "$1" in
     configure)
-        update-alternatives --install /usr/share/puppet/modules/net-interface puppet-module-net-interface \
-            /usr/share/puppet/modules.available/plexxi-net-interface 500
+        update-alternatives --install /usr/share/puppet/modules/net_interface puppet-module-net_interface \
+            /usr/share/puppet/modules.available/plexxi-net_interface 500
         ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
