@@ -1,4 +1,4 @@
-# == Class: net-interface
+# == Class: net_interface
 #
 # Manage /etc/network/interfaces.d/IFACE file for Debian system.
 #
