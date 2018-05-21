@@ -19,8 +19,8 @@ set -e
 
 case "$1" in
     remove|upgrade|deconfigure)
-        update-alternatives --remove puppet-module-net-interface \
-            /usr/share/puppet/modules.available/plexxi-net-interface
+        update-alternatives --remove puppet-module-net_interface \
+            /usr/share/puppet/modules.available/plexxi-net_interface
         ;;
 
     failed-upgrade)

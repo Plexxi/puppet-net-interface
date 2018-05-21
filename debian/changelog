@@ -1,3 +1,9 @@
+puppet-module-plexxi-net-interface (1.0.2) unstable; urgency=medium
+
+  *  change hyphen in class name to underscore
+
+ -- Matthew Morgan <matt.morgan@plexxi.com>  Tue, 24 Apr 2018 15:08:31 -0400
+
 puppet-module-plexxi-net-interface (1.0.1) unstable; urgency=low
 
   * Fix oops; remove notices from init.pp

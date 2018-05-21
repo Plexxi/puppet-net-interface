@@ -1,4 +1,4 @@
-# == Class: net-interface
+# == Class: net_interface
 #
 # Manage /etc/network/interfaces.d/IFACE file for Debian system.
 #
@@ -24,14 +24,14 @@
 # === Examples
 #
 # IPv4 disabled; IPv6 use DHCP no options
-#  class { 'net-interface':
+#  class { 'net_interface':
 #    ifname => 'mgmt',
 #    disable4 => true,
 #    dhcp6 => {},
 #  }
 #
 # IPv4 use DHCP w/ options; IPv6 static params w/ extra static routes
-#  class { 'net-interface':
+#  class { 'net_interface':
 #    ifname => 'mgmt',
 #    dhcp4 => { hostname => 'me.here',
 #               leasetime => 3600,
@@ -45,7 +45,7 @@
 #  }
 #
 # IPv4 static params; IPv6 disabled
-#  class { 'net-interface':
+#  class { 'net_interface':
 #    ifname => 'mgmt',
 #    static4 => { addrs => [ '1.2.3.4/16', ],
 #                 gateway => '1.2.3.254',
@@ -57,12 +57,14 @@
 # === Authors
 #
 # Joe Lorenz <joe.lorenz@plexxi.com>
+# Matthew Morgan <matt.morgan@plexxi.com>
 #
 # === Copyright
 #
 # Copyright 2017 Joe Lorenz, Plexxi Inc.
+# Copyright 2018 Matthew Morgan, Plexxi Inc.
 #
-class net-interface (
+class net_interface (
   $ifname = undef,
 #  $hwaddress = undef,
 

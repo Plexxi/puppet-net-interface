@@ -1,7 +1,7 @@
 require 'spec_helper'
-describe 'net-interface' do
+describe 'net_interface' do
 
   context 'with defaults for all parameters' do
-    it { should contain_class('net-interface') }
+    it { should contain_class('net_interface') }
   end
 end
