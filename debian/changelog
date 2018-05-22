@@ -1,3 +1,9 @@
+puppet-module-plexxi-net-interface (1.0.3) unstable; urgency=medium
+
+  * Refactor validations to Puppet 4 way
+
+ -- Joe Lorenz <joe.lorenz@plexxi.com>  Tue, 22 May 2018 10:48:37 -0400
+
 puppet-module-plexxi-net-interface (1.0.2) unstable; urgency=medium
 
   *  change hyphen in class name to underscore

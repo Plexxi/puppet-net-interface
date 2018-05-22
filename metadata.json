@@ -1,6 +1,6 @@
 {
   "name": "plexxi-net_interface",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "author": "plexxi",
   "summary": "Manage network interface settings in /etc/network/interfaces style config file.",
   "license": "Apache 2.0",

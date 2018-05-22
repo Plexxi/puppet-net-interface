@@ -64,68 +64,112 @@
 # Copyright 2017 Joe Lorenz, Plexxi Inc.
 # Copyright 2018 Matthew Morgan, Plexxi Inc.
 #
+
+# Types
+type Ip_v4_cidr = Pattern[/\A([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\/([1-9]|[12][0-9]|3[0-2])?\z/]
+
+type Ip_v4_nosubnet = Pattern[/\A([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/]
+
+type Ip_v6_alternative = Pattern[
+  /\A([[:xdigit:]]{1,4}:){6}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){5}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){4}(:[[:xdigit:]]{1,4}){0,1}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){3}(:[[:xdigit:]]{1,4}){0,2}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){2}(:[[:xdigit:]]{1,4}){0,3}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){1}(:[[:xdigit:]]{1,4}){0,4}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A:(:[[:xdigit:]]{1,4}){0,5}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+]
+
+type Ip_v6_compressed = Pattern[
+  /\A:(:|(:[[:xdigit:]]{1,4}){1,7})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){1}(:|(:[[:xdigit:]]{1,4}){1,6})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){2}(:|(:[[:xdigit:]]{1,4}){1,5})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){3}(:|(:[[:xdigit:]]{1,4}){1,4})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){4}(:|(:[[:xdigit:]]{1,4}){1,3})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){5}(:|(:[[:xdigit:]]{1,4}){1,2})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){6}(:|(:[[:xdigit:]]{1,4}){1,1})(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+  /\A([[:xdigit:]]{1,4}:){7}:(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/,
+]
+
+type Ip_v6_full = Pattern[/\A[[:xdigit:]]{1,4}(:[[:xdigit:]]{1,4}){7}(\/(1([01][0-9]|[2][0-8])|[1-9][0-9]|[1-9]))?\z/]
+
+type Ip_v6_alternative_nosubnet = Pattern[
+  /\A([[:xdigit:]]{1,4}:){6}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A([[:xdigit:]]{1,4}:){5}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A([[:xdigit:]]{1,4}:){4}(:[[:xdigit:]]{1,4}){0,1}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A([[:xdigit:]]{1,4}:){3}(:[[:xdigit:]]{1,4}){0,2}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A([[:xdigit:]]{1,4}:){2}(:[[:xdigit:]]{1,4}){0,3}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A([[:xdigit:]]{1,4}:){1}(:[[:xdigit:]]{1,4}){0,4}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+  /\A:(:[[:xdigit:]]{1,4}){0,5}:([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\.([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])){3}\z/,
+]
+
+type Ip_v6_compressed_nosubnet = Pattern[
+  /\A:(:|(:[[:xdigit:]]{1,4}){1,7})\z/,
+  /\A([[:xdigit:]]{1,4}:){1}(:|(:[[:xdigit:]]{1,4}){1,6})\z/,
+  /\A([[:xdigit:]]{1,4}:){2}(:|(:[[:xdigit:]]{1,4}){1,5})\z/,
+  /\A([[:xdigit:]]{1,4}:){3}(:|(:[[:xdigit:]]{1,4}){1,4})\z/,
+  /\A([[:xdigit:]]{1,4}:){4}(:|(:[[:xdigit:]]{1,4}){1,3})\z/,
+  /\A([[:xdigit:]]{1,4}:){5}(:|(:[[:xdigit:]]{1,4}){1,2})\z/,
+  /\A([[:xdigit:]]{1,4}:){6}(:|(:[[:xdigit:]]{1,4}){1,1})\z/,
+  /\A([[:xdigit:]]{1,4}:){7}:\z/,
+]
+
+type Ip_v6_full_nosubnet = Pattern[/\A[[:xdigit:]]{1,4}(:[[:xdigit:]]{1,4}){7}\z/]
+
+type Ip_v6 = Variant[Ip_v6_alternative, Ip_v6_compressed, Ip_v6_full]
+
+type Ip_v6_nosubnet = Variant[Ip_v6_alternative_nosubnet, Ip_v6_compressed_nosubnet, Ip_v6_full_nosubnet]
+
+# Class
 class net_interface (
-  $ifname = undef,
+  String $ifname = undef,
 #  $hwaddress = undef,
 
   # IPv4
-  $disable4 = false,
-  $dhcp4 = undef,
-  $static4 = undef,
+  Boolean $disable4 = false,
+  Optional[Struct[{ Optional[hostname]  => Pattern[/\A(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])\Z/],
+                    Optional[leasetime] => Integer,
+                    Optional[metric]    => Integer,
+                    Optional[vendor]    => String[1],
+                    Optional[client]    => String[1],
+                  }]] $dhcp4 = undef,
+  Optional[Struct[{ addrs               => Array[Ip_v4_cidr],
+                    Optional[gateway]   => Ip_v4_nosubnet,
+                    Optional[metric]    => Integer,
+                    Optional[mtu]       => Integer,
+                  }]] $static4 = undef,
 
   # IPv6
-  $disable6 = false,
-  $dhcp6 = undef,
-  $static6 = undef,
-  $auto6 = undef,
+  Boolean $disable6 = false,
+  Optional[Struct[{ Optional[accept_ra] => Enum['off', 'on', 'on+forwarding'],
+                  }]] $dhcp6 = undef,
+  Optional[Struct[{ addrs               => Array[Ip_v6],
+                    Optional[gateway]   => Ip_v6_nosubnet,
+                    Optional[mtu]       => Integer,
+                    Optional[privext]   => Enum['off', 'assign', 'prefer'],
+                    Optional[accept_ra] => Enum['off', 'on', 'on+forwarding'],
+                  }]] $static6 = undef,
+  Optional[Struct[{ Optional[privext]   => Enum['off', 'assign', 'prefer'],
+                    Optional[accept_ra] => Enum['off', 'on', 'on+forwarding'],
+                    Optional[dhcp]      => Boolean,
+                  }]] $auto6 = undef,
 
   # Static routes
-  $routes4 = undef,
-  $routes6 = undef,
+  Optional[Hash[ Ip_v4_cidr, Ip_v4_nosubnet ]] $routes4 = undef,
+  Optional[Hash[ Ip_v6, Ip_v6_nosubnet ]] $routes6 = undef,
 
 ) {
   $interfaces_dir = '/etc/network/interfaces.d'
   $required_pkgs = [ 'iproute2', 'isc-dhcp-client' ]
 
   if $osfamily != 'Debian' {
-    fail('This module supports Debian (jessie, and possibly later versions) only.')
+    fail('This module supports Debian (stretch, and possibly later versions) only.')
   }
 
   package { $required_pkgs: ensure => 'installed', }
 
 # Validations
-  define my_validate_ipv4_prefix {
-    $tmp = split($name, '/')
-    validate_ipv4_address($tmp[0])
-    validate_re($tmp[1], '^[0-9]{1,2}$', "address $name is not a valid IPv4 address/mask")
-    $mask = 0 + $tmp[1]
-    if $mask < 0 or $mask > 32 {
-      fail("address $name is not a valid IPv4 address/mask")
-    }
-  }
-
-  define my_validate_ipv4_address {
-    validate_ipv4_address($name)
-  }
-
-  define my_validate_ipv6_prefix {
-        $tmp = split($name, '/')
-        validate_ipv6_address($tmp[0])
-        validate_re($tmp[1], '^[0-9]{1,3}$', "address $name is not a valid IPv6 address/mask")
-        $mask = 0 + $tmp[1]
-        if $mask < 0 or $mask > 128 {
-          fail("address $name is not a valid IPv6 address/mask")
-        }
-  }
-
-  define my_validate_ipv6_address {
-    validate_ipv6_address($name)
-  }
-
-  if $ifname {
-    validate_string($ifname)
-  }
-  else {
+  if $ifname == undef or $ifname == "" {
     fail('ifname - interface name value is required')
   }
 
@@ -139,87 +183,49 @@ class net_interface (
     fail('hwaddress - invalid MAC')
   }
 
-  validate_bool($disable4)
-
   if $dhcp4 {
     if $static4 { fail('cannot specify both dhcp4 and static4') }
     if $disable4 and $disable4 == true { fail('cannot specify both dhcp4 and disable4') }
-    validate_hash($dhcp4)
     if has_key($dhcp4, metric) {
       $metric4 = $dhcp4[metric]
-      if !is_integer($metric4) {
-        fail('dhcp4 metric - expected integer value')
-      }
     }
     if has_key($dhcp4, hostname) {
       $hostname4 = $dhcp4[hostname]
-      validate_re($hostname4, '^(?![0-9]+$)(?!-)[a-zA-Z0-9-]{,63}(?<!-)$', 'dhcp4 hostname is invalid')
     }
     if has_key($dhcp4, leasetime) {
       $leasetime4 = $dhcp4[leasetime]
-      if !is_integer($leasetime4) {
-        fail('dhcp4 leasetime - expected integer number of seconds')
-      }
     }
     if has_key($dhcp4, vendor) {
       $vendor4 = $dhcp4[vendor]
-      validate_string($vendor4)
     }
     if has_key($dhcp4, client) {
       $client4 = $dhcp4[client]
-      validate_string($client4)
     }
   }
 
   if $static4 {
     if $dhcp4 { fail('cannot specify both dhcp4 and static4') }
     if $disable4 and $disable4 == true { fail('cannot specify both static4 and disable4') }
-    validate_hash($static4)
     if has_key($static4, addrs) {
       $addrs4 = $static4[addrs]
-      validate_array($addrs4)
-      my_validate_ipv4_prefix { $addrs4: }
-    }
-    else {
-      fail('static4 - must specify one or more address/mask entries')
     }
     if has_key($static4, gateway) {
       $gateway4 = $static4[gateway]
-      validate_ipv4_address($gateway4)
     }
     if has_key($static4, metric) {
       $metric4 = $static4[metric]
-      if !is_integer($metric4) {
-        fail('static4 metric - expected integer value')
-      }
     }
     if has_key($static4, mtu) {
       $mtu4 = $static4[mtu]
-      if !is_integer($mtu4) {
-        fail('static4 mtu - expected integer value')
-      }
     }
   }
-
-  validate_bool($disable6)
-
-  $accept_ra_values = [ '^off$',
-                        '^on$',
-                        '^on\+forwarding$',
-                      ]
-  $privext_values   = [ '^off$',
-                        '^assign$',
-                        '^prefer$',
-                      ]
 
   if $dhcp6 {
     if $static6 { fail('cannot specify both dhcp6 and static6') }
     if $disable6 and $disable6 == true { fail('cannot specify both dhcp6 and disable6') }
     if $auto6 { fail('cannot specify both dhcp6 and auto6') }
-    validate_hash($dhcp6)
     if has_key($dhcp6, accept_ra) {
       $dhcp6_accept_ra = downcase($dhcp6[accept_ra])
-      validate_re($dhcp6_accept_ra, $accept_ra_values)
     }
   }
 
@@ -227,32 +233,21 @@ class net_interface (
     if $dhcp6 { fail('cannot specify both dhcp6 and static6') }
     if $disable6 and $disable6 == true { fail('cannot specify both static6 and disable6') }
     if $auto6 { fail('cannot specify both static6 and auto6') }
-    validate_hash($static6)
+
     if has_key($static6, addrs) {
       $addrs6 = $static6[addrs]
-      validate_array($addrs6)
-      my_validate_ipv6_prefix { $addrs6: }
-    }
-    else {
-      fail('static6 - must specify one or more address/mask entries')
     }
     if has_key($static6, gateway) {
       $gateway6 = $static6[gateway]
-      validate_ipv6_address($gateway6)
     }
     if has_key($static6, mtu) {
       $mtu6 = $static6[mtu]
-      if !is_integer($mtu6) {
-        fail('static6 mtu - expected integer value')
-      }
     }
     if has_key($static6, privext) {
       $static6_privext = downcase($static6[privext])
-      validate_re($static6_privext, $privext_values)
     }
     if has_key($static6, accept_ra) {
       $static6_accept_ra = downcase($static6[accept_ra])
-      validate_re($static6_accept_ra, $accept_ra_values)
     }
   }
 
@@ -260,35 +255,16 @@ class net_interface (
     if $dhcp6 { fail('cannot specify both dhcp6 and auto6') }
     if $disable6 and $disable6 == true { fail('cannot specify both auto6 and disable6') }
     if $static6 { fail('cannot specify both auto6 and static6') }
-    validate_hash($auto6)
+
     if has_key($auto6, privext) {
       $auto6_privext = downcase($auto6[privext])
-      validate_re($auto6_privext, $privext_values)
     }
     if has_key($auto6, accept_ra) {
       $auto6_accept_ra = downcase($auto6[accept_ra])
-      validate_re($auto6_accept_ra, $accept_ra_values)
     }
     if has_key($auto6, dhcp) {
       $auto6_dhcp = $auto6[dhcp]
-      validate_bool($auto6_dhcp)
     }
-  }
-
-  if $routes4 {
-    validate_hash($routes4)
-    $nets = keys($routes4)
-    my_validate_ipv4_prefix { $nets: }
-    $nhops = unique(values($routes4))
-    my_validate_ipv4_address { $nhops: }
-  }
-
-  if $routes6 {
-    validate_hash($routes6)
-    $nets6 = keys($routes6)
-    my_validate_ipv6_prefix { $nets6: }
-    $nhops6 = unique(values($routes6))
-    my_validate_ipv6_address { $nhops6: }
   }
 
   #notice("ifname - $ifname")
@@ -306,16 +282,16 @@ class net_interface (
 
 # Actions
   $target = "/etc/network/interfaces.d/${ifname}"
-  validate_absolute_path($target)
+  validate_legacy(Stdlib::Compat::Absolute_Path, validate_absolute_path, $target)
   $tmp_target = "/tmp/plexxi-net-interface_${ifname}.tmp"
-  validate_absolute_path($tmp_target)
+  validate_legacy(Stdlib::Compat::Absolute_Path, validate_absolute_path, $tmp_target)
 
   file { $tmp_target:
     ensure  => file,
     owner   => 0,
     group   => 0,
     mode    => '0644',
-    content => template('net-interface/interfaces.erb'),
+    content => template("${module_name}/interfaces.erb"),
   }
 
   exec { "${ifname}-configure":
